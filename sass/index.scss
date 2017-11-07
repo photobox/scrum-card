@@ -1,5 +1,7 @@
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 
+$JIRA-FONT-SIZE: 165px;
+
 h1 {
     margin: 20px;
 }
@@ -43,7 +45,7 @@ header {
     right: 0;
     bottom: 0;
     color: #97CDFC;
-    font-size: 170px;
+    font-size: $JIRA-FONT-SIZE;
     text-align: center;
     line-height: 310px;
     font-weight: bold;
