@@ -20,6 +20,10 @@ class JiraModel {
         }
     }
 
+    getAuthString () {
+        return 'Basic ' + btoa(`${$username.value}:${document.querySelector('#jiraPassword').value}`);
+    }
+
     registerLinksIssue (issue) {
         if (issue.outwardIssue) {
             this.blocks.push(issue.outwardIssue.key);
@@ -39,6 +43,9 @@ class JiraModel {
     fetch (callback) {
         $.ajax({
             url: `${localStorage.getItem('jiraRestApiBaseUrl')}/issue/${this.key}`,
+            beforeSend: function(request) {
+                request.setRequestHeader('Authorization', this.getAuthString());
+            }.bind(this),
             dataType: 'json',
             success: this.onSuccess.bind(this, callback),
             error: function () {
@@ -126,10 +133,12 @@ class JiraCollection {
 
 const jiras  = new JiraCollection();
 const $input = document.querySelector('#jiraKey');
+const $username = document.querySelector('#jiraUsername');
 const $settingsContainer = document.querySelector('#settings-container');
 const $settingsURL = $settingsContainer.querySelector('#jiraBaseUrl');
 const $settingsStoryPoints = $settingsContainer.querySelector('#jiraStoryPoints');
 
+$username.value = localStorage.getItem('jiraUsername');
 $settingsURL.value = localStorage.getItem('jiraRestApiBaseUrl');
 $settingsStoryPoints.value = localStorage.getItem('storyPointsFieldName');
 
@@ -155,7 +164,6 @@ var getStoryPointsFieldId = function (key) {
                 }
                 return true;
             });
-            console.log(localStorage.getItem('storyPointsFieldId'));
             initModel(key);
         },
         error: function () {
@@ -185,6 +193,7 @@ var toggleSettings = function () {
 };
 
 document.querySelector('#settingsForm').onsubmit = function () {
+    localStorage.setItem('jiraUsername', $username.value);
     localStorage.setItem('jiraRestApiBaseUrl', $settingsURL.value);
     localStorage.setItem('storyPointsFieldName', $settingsStoryPoints.value);
     localStorage.setItem('storyPointsFieldId', '');
