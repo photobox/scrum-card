@@ -11,6 +11,19 @@
     </head>
     <body>
         <div id="settings-container">
+            <form class="form-inline" id="userForm">
+                <label class="sr-only" for="jiraUsername">JIRA Username</label>
+                <div class="input-group">
+                    <div class="input-group-addon">JIRA Username: </div>
+                    <input type="text" class="form-control" id="jiraUsername" placeholder="user.name">
+                </div>
+                <label class="sr-only" for="jiraBaseUrl">JIRA Password</label>
+                <div class="input-group">
+                    <div class="input-group-addon">JIRA Password: </div>
+                    <input type="password" class="form-control" id="jiraPassword" placeholder="*************">
+                </div>
+            </form>
+            <br/>
             <form class="form" id="settingsForm">
                 <div class="form-group">
                     <label class="sr-only" for="jiraBaseUrl">JIRA REST API base URL</label>

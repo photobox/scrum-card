@@ -126,6 +126,10 @@ header {
     min-width: 220px;
 }
 
+#userForm .input-group {
+    width: 50%;
+}
+
 @media print {
     html, body, #cards {
         margin: 0;
