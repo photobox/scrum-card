@@ -167,7 +167,7 @@ var getStoryPointsFieldId = function (key) {
             initModel(key);
         },
         error: function () {
-            alert('API error. Please verify the settings.');
+            alert('API error. Please verify the settings and your CORS plugin.');
         }
     });
 };
