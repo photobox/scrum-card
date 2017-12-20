@@ -14,14 +14,14 @@ class JiraModel {
         this.summary = attributes.summary || this.summary;
         this.description = attributes.description || this.description;
         this.timeestimate = attributes.timeestimate ? (attributes.timeestimate / 3600 / 7) + 'd' : this.timeestimate;
-        this.effort = attributes[localStorage.getItem('storyPointsFieldId')] || this.effort;
+        this.effort = attributes[localStorage.getItem('storyPointsFieldId')] || this.customfield_10003;
         if (attributes.issuelinks) {
             attributes.issuelinks.forEach(this.registerLinksIssue.bind(this));
         }
     }
 
     getAuthString () {
-        return 'Basic ' + btoa(`${$username.value}:${document.querySelector('#jiraPassword').value}`);
+        return 'Basic ' + btoa(`${$username.value}:${$password.value}`);
     }
 
     registerLinksIssue (issue) {
@@ -41,6 +41,8 @@ class JiraModel {
     }
 
     fetch (callback) {
+        console.log(`${localStorage.getItem('jiraRestApiBaseUrl')}/issue/${this.key}`);
+        console.log('auth string', this.getAuthString());
         $.ajax({
             url: `${localStorage.getItem('jiraRestApiBaseUrl')}/issue/${this.key}`,
             beforeSend: function(request) {
@@ -49,7 +51,7 @@ class JiraModel {
             dataType: 'json',
             success: this.onSuccess.bind(this, callback),
             error: function () {
-                alert('API error. Please verify the settings.');
+                alert('API error. Please verify the authorization settings.');
             }
         });
     }
@@ -68,11 +70,12 @@ class JiraView {
     }
 
     render () {
+        console.log('model',this.model);
         this.element = `<article class="card" id="${this.model.key}">
         		<div class="card-key">${this.model.key}</div>
                 <h2 class="card-title">${this.model.summary}</h2>
                 <div class="card-description">${this.model.description}</div>
-                <div class="card-complexity">${this.model.effort || this.model.timeestimate || ''}</div>
+                <div class="card-complexity">${this.model.customfield_10003 || this.model.timeestimate || ''}</div>
                 <div class="card-links">`;
         if (this.model.blocks.length) {
             this.element += `<div class="card-blocks">Blocks: ${this.model.blocks.join(', ')}</div>`;
@@ -134,11 +137,13 @@ class JiraCollection {
 const jiras  = new JiraCollection();
 const $input = document.querySelector('#jiraKey');
 const $username = document.querySelector('#jiraUsername');
+const $password = document.querySelector('#jiraPassword');
 const $settingsContainer = document.querySelector('#settings-container');
 const $settingsURL = $settingsContainer.querySelector('#jiraBaseUrl');
 const $settingsStoryPoints = $settingsContainer.querySelector('#jiraStoryPoints');
 
 $username.value = localStorage.getItem('jiraUsername');
+$password.value = localStorage.getItem('jiraPassword');
 $settingsURL.value = localStorage.getItem('jiraRestApiBaseUrl');
 $settingsStoryPoints.value = localStorage.getItem('storyPointsFieldName');
 
@@ -197,6 +202,7 @@ document.querySelector('#settingsForm').onsubmit = function () {
     localStorage.setItem('jiraRestApiBaseUrl', $settingsURL.value);
     localStorage.setItem('storyPointsFieldName', $settingsStoryPoints.value);
     localStorage.setItem('storyPointsFieldId', '');
+    localStorage.setItem('jiraPassword', $password.value);
     toggleSettings();
     return false;
 };
